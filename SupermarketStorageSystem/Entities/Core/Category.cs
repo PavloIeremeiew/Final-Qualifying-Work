@@ -4,6 +4,6 @@ namespace SupermarketStorageSystem.Entities.Core
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public ICollection<Product>? Products { get; set; } // Навігаційна властивість
+        public ICollection<Product>? Products { get; set; }
     }
 }

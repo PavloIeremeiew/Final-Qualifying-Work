@@ -7,11 +7,11 @@ namespace SupermarketStorageSystem.Entities.Log
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
-        public Product? Product { get; set; } // Навігаційна властивість
         public int QuantityChange { get; set; }
-        public string? QuantityType { get; set; } // "Додано", "Видалено", "Оновлено"
+        public string? OperationType { get; set; } // "Додано", "Видалено", "Оновлено"
         public DateTime Timestamp { get; set; }
-        public AuthorizedUser? AuthorizedUser { get; set; }
-        public int AuthorizedUserId { get; set; }
+        public int UserId { get; set; }
+        public Product? Product { get; set; }
+        public AuthorizedUser? User { get; set; }
     }
 }

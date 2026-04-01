@@ -1,38 +1,70 @@
 using SupermarketStorageSystem.Entities.Log;
 using SupermarketStorageSystem.Core.Repository;
 using SupermarketStorageSystem.Entities.Core;
+using SupermarketStorageSystem.Core.Constant;
 
 namespace SupermarketStorageSystem.Core.Services
 {
-    public class InventoryService
+    public class InventoryService(IInventoryRepository repository) : IInventoryService
     {
-        private readonly IInventoryRepository _repository;
-
-        public InventoryService(IInventoryRepository repository) => _repository = repository;
+        private readonly IInventoryRepository _repository = repository;
 
         public async Task ProcessInventory(string barcode, int actualQuantity, int userId)
         {
-            InventoryLog? log = null!;
-            var product =
-                await _repository.GetByBarcodeAsync(barcode)
-                    ?? throw new Exception("Товар не знайдено");
+            var product = await GetProductByBarcodeAsync(barcode);
 
             int difference = actualQuantity - product.CurrentStock;
-
-            if (difference != 0)
-            {
-                log = new InventoryLog
-                {
-                    ProductId = product.Id,
-                    QuantityChange = difference,
-                    QuantityType = "InventoryAdjustment",
-                    Timestamp = DateTime.Now,
-                    AuthorizedUserId = userId
-                };
-            }
-
             product.CurrentStock = actualQuantity;
+
+            var log = difference != 0 ? CreateInventoryLog(userId, product, difference, OperationType.InventoryAdjustment) : null!;
             await SaveProductAndLogAsync(product, log);
+        }
+
+        public async Task SellProductAsync(string barcode, int quantity, int userId)
+        {
+            var product = await GetProductByBarcodeAsync(barcode);
+
+            if (product.CurrentStock < quantity)
+                throw new Exception(ErrorsMessages.InsufficientStock);
+
+            product.CurrentStock -= quantity;
+
+            var log = CreateInventoryLog(userId, product, -quantity, OperationType.Sale);
+            await SaveProductAndLogAsync(product, log);
+        }
+
+        public async Task ReceiveProductAsync(string barcode, int quantity, int userId)
+        {
+            var product = await GetProductByBarcodeAsync(barcode);
+
+            product.CurrentStock += quantity;
+
+            var log = CreateInventoryLog(userId, product, quantity, OperationType.Receive);
+            await SaveProductAndLogAsync(product, log);
+        }
+
+        public async Task<bool> IsStockLow(string barcode)
+        {
+            var product = await _repository.GetByBarcodeAsync(barcode);
+            return product.CurrentStock <= product.MinStockLevel;
+        }
+
+        private async Task<Product> GetProductByBarcodeAsync(string barcode)
+        {
+            return await _repository.GetByBarcodeAsync(barcode)
+                                ?? throw new Exception(ErrorsMessages.ProductNotFound);
+        }
+
+        private static InventoryLog CreateInventoryLog(int userId, Product product, int change, OperationType operationType)
+        {
+            return new InventoryLog
+            {
+                ProductId = product.Id,
+                QuantityChange = change,
+                OperationType = operationType.ToString(),
+                Timestamp = DateTime.Now,
+                UserId = userId
+            };
         }
 
         private async Task SaveProductAndLogAsync(Product product, InventoryLog log)
@@ -41,55 +73,6 @@ namespace SupermarketStorageSystem.Core.Services
             if (log != null)
                 await _repository.AddLogAsync(log);
             await _repository.SaveChangesAsync();
-        }
-
-        public async Task SellProductAsync(string barcode, int quantity, int userId)
-        {
-            var product =
-                await _repository.GetByBarcodeAsync(barcode)
-                    ?? throw new Exception("Товар не знайдено.");
-
-            if (product.CurrentStock < quantity)
-                throw new Exception("Недостатньо товару на складі.");
-
-            product.CurrentStock -= quantity;
-
-            var log = new InventoryLog
-            {
-                ProductId = product.Id,
-                QuantityChange = -quantity,
-                QuantityType = "Sale",
-                Timestamp = DateTime.Now,
-                AuthorizedUserId = userId
-            };
-
-            await SaveProductAndLogAsync(product, log);
-        }
-
-        public async Task ReceiveProductAsync(string barcode, int quantity, int userId)
-        {
-            var product =
-                await _repository.GetByBarcodeAsync(barcode)
-                    ?? throw new Exception("Товар не зареєстровано в каталозі.");
-
-            product.CurrentStock += quantity;
-
-            var log = new InventoryLog
-            {
-                ProductId = product.Id,
-                QuantityChange = quantity,
-                QuantityType = "Receive",
-                Timestamp = DateTime.Now,
-                AuthorizedUserId = userId
-            };
-
-            await SaveProductAndLogAsync(product, log);
-        }
-
-        public async Task<bool> IsStockLow(string barcode)
-        {
-            var product = await _repository.GetByBarcodeAsync(barcode);
-            return product.CurrentStock <= product.MinStockLevel;
         }
     }
 }

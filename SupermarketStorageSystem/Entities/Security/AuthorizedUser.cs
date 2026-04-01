@@ -1,7 +1,14 @@
-using SupermarketStorageSystem.Entities.Security;
+using SupermarketStorageSystem.Entities.Log;
 
-public class AuthorizedUser
+namespace SupermarketStorageSystem.Entities.Security
 {
-    public string? FullName { get; set; }
-    public Role? Role { get; set; }
+    public class AuthorizedUser
+    {
+        public string? Id { get; set; }
+        public string? Username { get; set; }
+        public string? PasswordHash { get; set; }
+        public int RoleId { get; set; }
+        public Role? Role { get; set; }
+        public ICollection<InventoryLog>? InventoryLogs { get; set; }
+    }
 }
