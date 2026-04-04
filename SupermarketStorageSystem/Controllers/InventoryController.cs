@@ -10,14 +10,14 @@ namespace SupermarketStorageSystem.Controllers
         private readonly IInventoryService _inventoryService = inventoryService;
 
         [HttpPost("inventory-reconciliation")]
-        public async Task<IActionResult> Reconcile(string barcode, int actualQuantity, int userId)
+        public async Task<IActionResult> Reconcile(string barcode, int actualQuantity, string userId)
         {
             await _inventoryService.ProcessInventory(barcode, actualQuantity, userId);
             return Ok(new { Message = "Інвентаризація успішно проведена" });
         }
 
         [HttpPost("sell")]
-        public async Task<IActionResult> Sell(string barcode, int quantity, int userId)
+        public async Task<IActionResult> Sell(string barcode, int quantity, string userId)
         {
             try 
             {
