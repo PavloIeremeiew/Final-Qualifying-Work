@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SupermarketStorageSystem.Entities.Security;
 
-namespace SupermarketStorageSystem.Data.Identity
+namespace SupermarketStorageSystem.Gates
 {
     public class ApplicationUserIdentity : IdentityUser
     {

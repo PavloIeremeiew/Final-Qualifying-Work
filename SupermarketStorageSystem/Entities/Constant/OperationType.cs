@@ -1,4 +1,4 @@
-namespace SupermarketStorageSystem.Core.Constant
+namespace SupermarketStorageSystem.Entities.Constant
 {
     public enum OperationType
     {

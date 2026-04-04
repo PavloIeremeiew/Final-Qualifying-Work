@@ -1,14 +1,14 @@
 using SupermarketStorageSystem.Entities.Core;
 using SupermarketStorageSystem.Entities.Log;
-using SupermarketStorageSystem.Data.Context;
-using SupermarketStorageSystem.Core.Constant;
 using Microsoft.EntityFrameworkCore;
+using SupermarketStorageSystem.Entities.Constant;
+using SupermarketStorageSystem.Applications;
 
-namespace SupermarketStorageSystem.Core.Repository
+namespace SupermarketStorageSystem.Gates
 {
-    public class SqlInventoryRepository(InventoryDbContext context) : IInventoryRepository
+    public class SqlInventoryRepository(IApplicationDbContext context) : IInventoryRepository
     {
-        private readonly InventoryDbContext _context = context;
+        private readonly IApplicationDbContext _context = context;
 
         public async Task<Product> GetByBarcodeAsync(string barcode)
         {
@@ -20,19 +20,19 @@ namespace SupermarketStorageSystem.Core.Repository
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id) ?? throw new Exception(ErrorsMessages.ProductNotFound);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(ErrorsMessages.ProductNotFound);
             return product;
         }
 
         public async Task UpdateProductAsync(Product product)
         {
-            _context.Products.Update(product);
+            _context.UpdateProduct(product);
             await Task.CompletedTask;
         }
 
         public async Task AddLogAsync(InventoryLog log)
         {
-            await _context.InventoryLogs.AddAsync(log);
+            await _context.AddLogAsync(log);
         }
 
         public async Task SaveChangesAsync()

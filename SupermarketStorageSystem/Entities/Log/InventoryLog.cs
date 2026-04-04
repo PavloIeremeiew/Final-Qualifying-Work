@@ -8,7 +8,7 @@ namespace SupermarketStorageSystem.Entities.Log
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int QuantityChange { get; set; }
-        public string? OperationType { get; set; } // "Додано", "Видалено", "Оновлено"
+        public string? OperationType { get; set; }
         public DateTime Timestamp { get; set; }
         public int UserId { get; set; }
         public Product? Product { get; set; }

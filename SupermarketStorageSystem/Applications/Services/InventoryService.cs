@@ -1,9 +1,9 @@
 using SupermarketStorageSystem.Entities.Log;
-using SupermarketStorageSystem.Core.Repository;
 using SupermarketStorageSystem.Entities.Core;
-using SupermarketStorageSystem.Core.Constant;
+using SupermarketStorageSystem.Entities.Constant;
+using SupermarketStorageSystem.Applications;
 
-namespace SupermarketStorageSystem.Core.Services
+namespace SupermarketStorageSystem.Applications
 {
     public class InventoryService(IInventoryRepository repository) : IInventoryService
     {

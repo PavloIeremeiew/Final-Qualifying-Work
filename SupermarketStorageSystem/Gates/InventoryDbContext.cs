@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using SupermarketStorageSystem.Applications;
 using SupermarketStorageSystem.Entities.Core;
 using SupermarketStorageSystem.Entities.Log;
 
-namespace SupermarketStorageSystem.Data.Context
+namespace SupermarketStorageSystem.Gates
 {
     public class InventoryDbContext(DbContextOptions<InventoryDbContext> options) : DbContext(options), IApplicationDbContext
     {
@@ -15,6 +16,16 @@ namespace SupermarketStorageSystem.Data.Context
         IQueryable<Category> IApplicationDbContext.Categories => Categories;
 
         IQueryable<InventoryLog> IApplicationDbContext.InventoryLogs => InventoryLogs;
+
+        public void UpdateProduct(Product product)
+        {
+            Products.Update(product);
+        }
+
+        public async Task AddLogAsync(InventoryLog log, CancellationToken cancellationToken = default)
+        {
+            await InventoryLogs.AddAsync(log, cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,7 +1,7 @@
 using SupermarketStorageSystem.Entities.Core;
 using SupermarketStorageSystem.Entities.Log;
 
-namespace SupermarketStorageSystem.Core.Repository
+namespace SupermarketStorageSystem.Applications
 {
     public interface IInventoryRepository
     {
