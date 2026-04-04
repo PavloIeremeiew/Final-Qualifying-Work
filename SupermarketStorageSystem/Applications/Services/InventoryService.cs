@@ -8,7 +8,7 @@ namespace SupermarketStorageSystem.Applications.Services
     {
         private readonly IInventoryRepository _repository = repository;
 
-        public async Task ProcessInventory(string barcode, int actualQuantity, int userId)
+        public async Task ProcessInventory(string barcode, int actualQuantity, string userId)
         {
             var product = await GetProductByBarcodeAsync(barcode);
 
@@ -19,7 +19,7 @@ namespace SupermarketStorageSystem.Applications.Services
             await SaveProductAndLogAsync(product, log);
         }
 
-        public async Task SellProductAsync(string barcode, int quantity, int userId)
+        public async Task SellProductAsync(string barcode, int quantity, string userId)
         {
             var product = await GetProductByBarcodeAsync(barcode);
 
@@ -32,7 +32,7 @@ namespace SupermarketStorageSystem.Applications.Services
             await SaveProductAndLogAsync(product, log);
         }
 
-        public async Task ReceiveProductAsync(string barcode, int quantity, int userId)
+        public async Task ReceiveProductAsync(string barcode, int quantity, string userId)
         {
             var product = await GetProductByBarcodeAsync(barcode);
 
@@ -54,7 +54,7 @@ namespace SupermarketStorageSystem.Applications.Services
                                 ?? throw new Exception(ErrorsMessages.ProductNotFound);
         }
 
-        private static InventoryLog CreateInventoryLog(int userId, Product product, int change, OperationType operationType)
+        private static InventoryLog CreateInventoryLog(string userId, Product product, int change, OperationType operationType)
         {
             return new InventoryLog
             {

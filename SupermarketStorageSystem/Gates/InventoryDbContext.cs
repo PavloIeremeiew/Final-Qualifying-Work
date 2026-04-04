@@ -30,6 +30,7 @@ namespace SupermarketStorageSystem.Gates
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Product>().Property(p => p.PurchasePrice).HasPrecision(18, 2);
             modelBuilder.Entity<Product>().HasIndex(p => p.Barcode).IsUnique();
             modelBuilder.Entity<Product>().Property(p => p.Name).IsRequired().HasMaxLength(200);
         }
