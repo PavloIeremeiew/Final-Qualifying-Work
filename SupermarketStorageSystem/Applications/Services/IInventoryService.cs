@@ -1,4 +1,4 @@
-namespace SupermarketStorageSystem.Applications
+namespace SupermarketStorageSystem.Applications.Services
 {
     public interface IInventoryService
     {
