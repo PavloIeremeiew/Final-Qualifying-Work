@@ -5,10 +5,11 @@ namespace SupermarketStorageSystem.Applications
 {
     public interface IInventoryRepository
     {
-        Task<Product> GetByBarcodeAsync(string barcode);
-        Task<Product> GetByIdAsync(int id);
-        Task UpdateProductAsync(Product product);
-        Task AddLogAsync(InventoryLog log);
-        Task SaveChangesAsync();
+        public Task<Product> GetByBarcodeAsync(string barcode);
+        public Task<Product> GetByIdAsync(int id);
+        public Task UpdateProductAsync(Product product);
+        public Task AddLogAsync(InventoryLog log);
+        public Task SaveChangesAsync();
+        public Task<IEnumerable<Product>> GetAllAsync();
     }
 }

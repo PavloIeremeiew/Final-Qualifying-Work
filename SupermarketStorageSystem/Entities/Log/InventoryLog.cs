@@ -8,6 +8,7 @@ namespace SupermarketStorageSystem.Entities.Log
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int QuantityChange { get; set; }
+        public int ResultingStock { get; set; }
         public string? OperationType { get; set; }
         public DateTime Timestamp { get; set; }
         public string? UserId { get; set; }

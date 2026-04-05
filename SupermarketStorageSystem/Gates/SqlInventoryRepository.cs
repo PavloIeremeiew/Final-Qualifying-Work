@@ -15,12 +15,12 @@ namespace SupermarketStorageSystem.Gates
             return await _context.Products
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Barcode == barcode)
-                    ?? throw new Exception(ErrorsMessages.ProductNotFound);
+                    ?? throw new Exception(StockValidationMessages.ProductNotFound);
         }
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(ErrorsMessages.ProductNotFound);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception(StockValidationMessages.ProductNotFound);
             return product;
         }
 
@@ -38,6 +38,11 @@ namespace SupermarketStorageSystem.Gates
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            return await _context.Products.Include(p => p.Category).ToListAsync();
         }
     }
 }

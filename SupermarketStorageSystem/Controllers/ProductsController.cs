@@ -2,37 +2,60 @@
 using Microsoft.EntityFrameworkCore;
 using SupermarketStorageSystem.Applications;
 using SupermarketStorageSystem.Entities.Core;
+using SupermarketStorageSystem.Entities.Constant;
+using SupermarketStorageSystem.Entities.Log;
+using SupermarketStorageSystem.Entities.DTOs;
+using SupermarketStorageSystem.Applications.Services;
 
 namespace SupermarketStorageSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController(IApplicationDbContext context) : ControllerBase
+    public class ProductsController(IApplicationDbContext context, IInventoryService inventoryService, IMappingService mappingService) : ControllerBase
     {
         private readonly IApplicationDbContext _context = context;
+        private readonly IInventoryService _inventoryService = inventoryService;
+        private readonly IMappingService _mappingService = mappingService;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _context.Products.Include(p => p.Category).ToListAsync();
+            var products = await _inventoryService.GetAllProductsAsync();
             return Ok(products);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Create(ProductCreateDto dto, string? userId)
         {
-            if (await _context.Products.AnyAsync(p => p.Barcode == product.Barcode))
-                return BadRequest("Товар з таким штрих-кодом вже існує");
+            try
+            {
+                Product product = _mappingService.MapToProduct(dto);
 
-            await _context.AddLogAsync(new Entities.Log.InventoryLog
+                await _context.AddProductAsync(product);
+                await _context.SaveChangesAsync();
+
+                var log = CreateInventoryLog(product, userId);
+                await _context.AddLogAsync(log);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { Message = StockValidationMessages.SucsessfulOperation, ProductId = product.Id });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private static InventoryLog CreateInventoryLog(Product product, string? userId)
+        {
+            return new InventoryLog
             {
                 ProductId = product.Id,
-                OperationType = "Створення",
+                OperationType = OperationType.AddNewProduct.ToString(),
                 Timestamp = DateTime.Now,
+                UserId = userId,
                 QuantityChange = product.CurrentStock
-            });
-
-            return Ok(new { Message = "Товар додано" });
+            };
         }
     }
 }

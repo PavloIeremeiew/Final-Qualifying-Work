@@ -4,6 +4,7 @@ namespace SupermarketStorageSystem.Entities.Constant
     {
         Sale,
         Receive,
-        InventoryAdjustment
+        InventoryAdjustment,
+        AddNewProduct
     }
 }

@@ -18,8 +18,6 @@ namespace SupermarketStorageSystem.Gates
         IQueryable<Product> IApplicationDbContext.Products => Products;
         IQueryable<Category> IApplicationDbContext.Categories => Categories;
         IQueryable<InventoryLog> IApplicationDbContext.InventoryLogs => InventoryLogs;
-        IQueryable<AuthorizedUser> IApplicationDbContext.AuthorizedUsers => AuthorizedUsers;
-        IQueryable<Role> IApplicationDbContext.Roles => Roles;
 
         public void UpdateProduct(Product product)
         {
@@ -29,6 +27,15 @@ namespace SupermarketStorageSystem.Gates
         public async Task AddLogAsync(InventoryLog log, CancellationToken cancellationToken = default)
         {
             await InventoryLogs.AddAsync(log, cancellationToken);
+        }
+        public async Task AddProductAsync(Product product)
+        {
+            await Products.AddAsync(product);
+        }
+
+        public async Task AddCategoryAsync(Category category)
+        {
+            await Categories.AddAsync(category);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,7 +51,7 @@ namespace SupermarketStorageSystem.Gates
         private static void AddMockValue(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Role>().HasData(MockRoles());
-            modelBuilder.Entity<AuthorizedUser>().HasData(MockUser());
+            modelBuilder.Entity<AuthorizedUser>().HasData(MockUsers());
         }
 
         private static List<Role> MockRoles()
@@ -58,15 +65,34 @@ namespace SupermarketStorageSystem.Gates
             return roles;
         }
 
-        private static AuthorizedUser MockUser()
+        private static List<AuthorizedUser> MockUsers()
         {
-            return new()
+            List<AuthorizedUser> users = [];
+            users.Add(new AuthorizedUser
             {
                 Id = "adminID",
                 Username = "admin",
                 PasswordHash = "PasswordHashadmin123",
                 RoleId = (int)RoleType.Administrator + 1
-            };
+            });
+
+            users.Add(new AuthorizedUser
+            {
+                Id = "managerID",
+                Username = "manager",
+                PasswordHash = "PasswordHashmanager123",
+                RoleId = (int)RoleType.Manager + 1
+            });
+
+            users.Add(new AuthorizedUser
+            {
+                Id = "storekeeperID",
+                Username = "storekeeper",
+                PasswordHash = "PasswordHashstorekeeper123",
+                RoleId = (int)RoleType.Storekeeper + 1
+            });
+
+            return users;
         }
     }
 }

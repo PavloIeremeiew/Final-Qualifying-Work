@@ -9,6 +9,7 @@ builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
+builder.Services.AddScoped<IMappingService, MappingService>();
 builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<InventoryDbContext>());
 builder.Services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
@@ -25,6 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/openapi/v1.json", "v1");
+        options.RoutePrefix = "swagger";
     });
 }
 
