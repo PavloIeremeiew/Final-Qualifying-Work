@@ -1,6 +1,5 @@
 using SupermarketStorageSystem.Entities.Core;
 using SupermarketStorageSystem.Entities.Log;
-using SupermarketStorageSystem.Entities.Security;
 
 namespace SupermarketStorageSystem.Applications
 {

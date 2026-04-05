@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SupermarketStorageSystem.Applications;
 using SupermarketStorageSystem.Entities.Core;
 using SupermarketStorageSystem.Entities.Constant;
