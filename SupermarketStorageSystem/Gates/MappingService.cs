@@ -1,8 +1,9 @@
 using SupermarketStorageSystem.Entities.Core;
 using SupermarketStorageSystem.Entities.DTOs;
 using SupermarketStorageSystem.Entities.Log;
+using SupermarketStorageSystem.Applications.Services;
 
-namespace SupermarketStorageSystem.Applications.Services
+namespace SupermarketStorageSystem.Gates
 {
     public class MappingService : IMappingService
     {
