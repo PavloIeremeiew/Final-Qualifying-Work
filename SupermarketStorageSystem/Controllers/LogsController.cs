@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SupermarketStorageSystem.Applications;
 using SupermarketStorageSystem.Applications.Services;
+using SupermarketStorageSystem.Entities.Core;
 
 namespace SupermarketStorageSystem.Controllers
 {
@@ -16,16 +17,20 @@ namespace SupermarketStorageSystem.Controllers
         public async Task<IActionResult> GetHistory(int? productId)
         {
             var query = _context.InventoryLogs.AsQueryable();
+            Product? product = null;
 
             if (productId.HasValue)
+            {
                 query = query.Where(l => l.ProductId == productId.Value);
+                product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId.Value);
+            }
 
             var logs = await query
                 .OrderByDescending(l => l.Timestamp)
                 .Take(100)
                 .ToListAsync();
 
-            return Ok(logs.Select(log => _mappingService.MapToLogDTO(log, log.Product?.Name)));
+            return Ok(logs.Select(log => _mappingService.MapToLogDTO(log, product?.Name)));
         }
     }
 }

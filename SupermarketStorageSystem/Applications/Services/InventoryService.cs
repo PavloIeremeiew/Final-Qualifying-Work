@@ -12,6 +12,7 @@ namespace SupermarketStorageSystem.Applications.Services
 
         public async Task<LogDTO> ProcessInventory(string barcode, int actualQuantity, string userId)
         {
+            ValidateStockChange(actualQuantity);
             var product = await GetProductByBarcodeAsync(barcode);
 
             int difference = actualQuantity - product.CurrentStock;
@@ -24,6 +25,7 @@ namespace SupermarketStorageSystem.Applications.Services
 
         public async Task<LogDTO> SellProductAsync(string barcode, int quantity, string userId)
         {
+            ValidateStockChange(quantity);
             var product = await GetProductByBarcodeAsync(barcode);
 
             if (product.CurrentStock < quantity)
@@ -38,6 +40,7 @@ namespace SupermarketStorageSystem.Applications.Services
 
         public async Task<LogDTO> ReceiveProductAsync(string barcode, int quantity, string userId)
         {
+            ValidateStockChange(quantity);
             var product = await GetProductByBarcodeAsync(barcode);
 
             product.CurrentStock += quantity;
@@ -84,6 +87,12 @@ namespace SupermarketStorageSystem.Applications.Services
             if (log != null)
                 await _repository.AddLogAsync(log);
             await _repository.SaveChangesAsync();
+        }
+
+        private void ValidateStockChange(int change)
+        {
+            if (change < 0)
+                throw new Exception(StockValidationMessages.InvalidQuantity);
         }
     }
 }
